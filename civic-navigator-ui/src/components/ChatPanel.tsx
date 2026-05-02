@@ -152,12 +152,13 @@ export default function ChatPanel({ location, className }: ChatPanelProps) {
       setMessages((prev) =>
         prev.map((m) => (m.id === loadingId ? assistantMsg : m))
       );
-    } catch {
+    } catch (err) {
       const errMsg: Message = {
         id: loadingId,
         role: "assistant",
-        content:
-          "⚠️ I couldn't reach the AI service. Please check the server is running and try again.",
+        content: err instanceof Error && err.message
+          ? `⚠️ ${err.message}`
+          : "⚠️ I couldn't reach the AI service. Please check your connection and try again.",
         timestamp: new Date(),
       };
       setMessages((prev) =>

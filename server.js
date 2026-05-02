@@ -226,6 +226,23 @@ app.post('/api/chat', async (req, res, next) => {
     const result = await civicAgent(clean, safeLocation, (history || []).slice(-8), language);
     res.json(result);
   } catch (err) {
+    // Map well-known Gemini errors to appropriate HTTP status codes
+    const msg = err.message || '';
+    if (msg.includes('quota exceeded') || msg.includes('RESOURCE_EXHAUSTED')) {
+      return res.status(429).json({
+        error: 'AI quota limit reached. Please wait a moment and try again.',
+      });
+    }
+    if (msg.includes('API key') || msg.includes('INVALID_ARGUMENT')) {
+      return res.status(503).json({
+        error: 'AI service configuration error. Please contact support.',
+      });
+    }
+    if (msg.includes('SAFETY')) {
+      return res.status(400).json({
+        error: 'Your message was flagged by safety filters. Please rephrase your question.',
+      });
+    }
     next(err);
   }
 });
