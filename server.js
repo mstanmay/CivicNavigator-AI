@@ -22,8 +22,7 @@ import 'dotenv/config';
 import { validateEnv, config, log, APP_VERSION,
          RATE_LIMIT_WINDOW_MS, RATE_LIMIT_MAX, MAX_MESSAGE_LENGTH, MAX_ADDRESS_LENGTH } from './src/config.js';
 import { civicAgent }                         from './src/civicAgent.js';
-import { logCivicInsight }                    from './src/bigQueryService.js';
-import { archiveToGCS }                       from './src/storageService.js';
+import { streamToBigQuery, archiveToStorage } from './gcp-services.js';
 import { searchPollingPlaces }                from './src/mapsService.js';
 import { getCandidateInfo, getElectionInfo }  from './src/electionService.js';
 
@@ -234,7 +233,7 @@ app.post('/api/chat', async (req, res, next) => {
     res.json(result);
 
     // Fire-and-forget: Stream anonymous insight to BigQuery (Mocked)
-    logCivicInsight(result.intent, language || 'en', safeLocation?.city || 'Unknown');
+    streamToBigQuery({ intent: result.intent, language: language || 'en', city: safeLocation?.city || 'Unknown' });
   } catch (err) {
     // Map well-known Gemini errors to appropriate HTTP status codes
     const msg = err.message || '';
@@ -340,7 +339,7 @@ app.use((err, req, res, next) => {
   log.error('[Unhandled Error]', err);
 
   // Archive critical errors to Cloud Storage for auditing
-  archiveToGCS('SYSTEM_ERRORS', {
+  archiveToStorage('SYSTEM_ERRORS', `${Date.now()}.json`, {
     error: err.message,
     path: req.path,
     timestamp: new Date().toISOString()

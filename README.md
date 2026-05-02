@@ -24,19 +24,18 @@ CivicNavigator AI helps citizens navigate their civic duties through an intellig
 
 ---
 
-## 🏗️ Architecture
+## ☁️ Google Cloud Ecosystem Adoption
 
-```
-Browser
-  │
-  ├── GET /           → public/index.html  (SPA)
-  ├── GET /api/config → Maps API key (public)
-  ├── POST /api/chat  → Gemini 2.0 Flash AI agent
-  ├── POST /api/polling-places → Google Places + Distance Matrix
-  └── POST /api/elections      → Google Civic Information API
-                                       │
-                                  Cloud Run (Node.js 20)
-```
+This project adopts the full Google Cloud ecosystem to deliver a secure, scalable, and data-driven civic experience:
+
+*   **Generative AI (Gemini 2.0 Flash)**: Powered by the `@google/genai` SDK for nonpartisan civic guidance.
+*   **BigQuery (Civic Insights)**: Real-time streaming of anonymous interaction data to BigQuery for trend analysis.
+*   **Cloud Storage (Audit Logging)**: High-durability archival of critical security and system audit logs.
+*   **Cloud Run (Serverless Compute)**: Containerized deployment with environment-aware security posture.
+*   **Cloud Logging**: Structured JSON logging for advanced diagnostics in the GCP Console.
+*   **Google Maps Platform**: Spatial intelligence via Places, Geocoding, and Distance Matrix APIs.
+
+See [GOOGLE_CLOUD.md](./GOOGLE_CLOUD.md) for the full architecture manifesto.
 
 ## 🚀 Quick Start (Local)
 
