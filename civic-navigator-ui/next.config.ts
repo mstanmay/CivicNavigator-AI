@@ -1,13 +1,23 @@
 import type { NextConfig } from "next";
 
+const CLOUD_RUN_URL = "https://election-assistant-383943922335.asia-south1.run.app";
+
 const nextConfig: NextConfig = {
-  // Proxy /api/* → backend (avoids CORS issues in dev)
+  // Embed public env vars so they resolve at Vercel build time even if not set in dashboard
+  env: {
+    NEXT_PUBLIC_API_URL:
+      process.env.NEXT_PUBLIC_API_URL || CLOUD_RUN_URL,
+    NEXT_PUBLIC_GOOGLE_MAPS_KEY:
+      process.env.NEXT_PUBLIC_GOOGLE_MAPS_KEY ||
+      "AIzaSyCh3qh1Iqc1o1Xg2Ydr7CNV_EUKLV7nlII",
+  },
+
+  // Proxy /backend/* → Cloud Run (avoids CORS issues)
   async rewrites() {
-    const apiBase = process.env.NEXT_PUBLIC_API_URL;
-    if (!apiBase) return [];
+    const apiBase = process.env.NEXT_PUBLIC_API_URL || CLOUD_RUN_URL;
     return [
       {
-        source: "/api/:path*",
+        source: "/backend/:path*",
         destination: `${apiBase}/:path*`,
       },
     ];
