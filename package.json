@@ -7,7 +7,9 @@
   "scripts": {
     "start": "node server.js",
     "dev": "node --watch server.js",
-    "test": "node tests/api.test.js"
+    "test": "mocha tests/**/*.test.js --timeout 10000",
+    "test:security": "mocha tests/security.test.js --timeout 5000",
+    "security-audit": "npm audit"
   },
   "keywords": [
     "election",
@@ -30,6 +32,8 @@
     "node-cache": "^5.1.2"
   },
   "devDependencies": {
+    "chai": "^6.2.2",
+    "mocha": "^11.7.5",
     "node-fetch": "^3.3.2"
   },
   "engines": {

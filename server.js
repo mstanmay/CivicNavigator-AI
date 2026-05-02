@@ -22,6 +22,8 @@ import 'dotenv/config';
 import { validateEnv, config, log, APP_VERSION,
          RATE_LIMIT_WINDOW_MS, RATE_LIMIT_MAX, MAX_MESSAGE_LENGTH, MAX_ADDRESS_LENGTH } from './src/config.js';
 import { civicAgent }                         from './src/civicAgent.js';
+import { logCivicInsight }                    from './src/bigQueryService.js';
+import { archiveToGCS }                       from './src/storageService.js';
 import { searchPollingPlaces }                from './src/mapsService.js';
 import { getCandidateInfo, getElectionInfo }  from './src/electionService.js';
 
@@ -166,6 +168,11 @@ app.get('/health', (req, res) => {
     status:    'healthy',
     version:   APP_VERSION,
     timestamp: new Date().toISOString(),
+    environment: {
+      platform: process.env.K_SERVICE ? 'Google Cloud Run' : 'Local',
+      service:  process.env.K_SERVICE || 'unknown',
+      region:   process.env.K_REVISION ? 'asia-south1' : 'local'
+    },
     services: {
       gemini: !!config.geminiKey,
       maps:   !!config.mapsKey,
@@ -225,6 +232,9 @@ app.post('/api/chat', async (req, res, next) => {
 
     const result = await civicAgent(clean, safeLocation, (history || []).slice(-8), language);
     res.json(result);
+
+    // Fire-and-forget: Stream anonymous insight to BigQuery (Mocked)
+    logCivicInsight(result.intent, language || 'en', safeLocation?.city || 'Unknown');
   } catch (err) {
     // Map well-known Gemini errors to appropriate HTTP status codes
     const msg = err.message || '';
@@ -328,6 +338,13 @@ app.get('*', (req, res) => {
 // eslint-disable-next-line no-unused-vars
 app.use((err, req, res, next) => {
   log.error('[Unhandled Error]', err);
+
+  // Archive critical errors to Cloud Storage for auditing
+  archiveToGCS('SYSTEM_ERRORS', {
+    error: err.message,
+    path: req.path,
+    timestamp: new Date().toISOString()
+  });
 
   const status = err.status || err.statusCode || 500;
 
