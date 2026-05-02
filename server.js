@@ -185,7 +185,7 @@ app.get('/api/config', (req, res) => {
  */
 app.post('/api/chat', async (req, res, next) => {
   try {
-    const { message, location, history } = req.body;
+    const { message, location, history, language } = req.body;
 
     // ── Input Validation ────────────────────────────────────────────────
     if (!message || typeof message !== 'string') {
@@ -213,7 +213,7 @@ app.post('/api/chat', async (req, res, next) => {
 
     log.info('[CHAT] Incoming query', { preview: clean.slice(0, 60), hasLocation: !!safeLocation });
 
-    const result = await civicAgent(clean, safeLocation, (history || []).slice(-8));
+    const result = await civicAgent(clean, safeLocation, (history || []).slice(-8), language);
     res.json(result);
   } catch (err) {
     next(err);

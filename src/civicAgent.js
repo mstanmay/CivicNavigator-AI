@@ -63,9 +63,10 @@ Always end with one concrete action tip or a trustworthy resource link.`;
  * @param {string} message        - Sanitized user input.
  * @param {object|null} location  - { address, lat, lng, city, state }
  * @param {Array}  history        - Prior turns: [{ role, text }]
+ * @param {string} [language]     - Optional target language code (e.g., 'hi', 'kn').
  * @returns {Promise<AgentResult>}
  */
-export async function civicAgent(message, location = null, history = []) {
+export async function civicAgent(message, location = null, history = [], language = null) {
   if (!config.geminiKey) {
     throw new Error('Gemini API key is not configured. Set GEMINI_API_KEY.');
   }
@@ -86,8 +87,8 @@ export async function civicAgent(message, location = null, history = []) {
   // ── Detect intent early (used for suggestions & UI routing) ────────────
   const intent = detectIntent(message);
 
-  // ── Detect language for Translation API ────────────────────────────────
-  const detectedLang = detectLanguage(message);
+  // ── Detect language (use provided language or fallback to heuristic) ───
+  const detectedLang = language || detectLanguage(message);
 
   // ── Build enriched message with location context ───────────────────────
   let enrichedMessage = message;

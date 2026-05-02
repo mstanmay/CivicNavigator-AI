@@ -109,7 +109,7 @@ export default function ChatPanel({ location, className }: ChatPanelProps) {
       let responseData: { content: string; structured: Message["structured"] };
 
       if (apiBase) {
-        const res = await fetch(`${apiBase}/ask`, {
+        const res = await fetch(`${apiBase}/api/chat`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -118,7 +118,15 @@ export default function ChatPanel({ location, className }: ChatPanelProps) {
             language: language,
           }),
         });
-        responseData = await res.json();
+        const data = await res.json();
+        responseData = {
+          content: data.reply,
+          structured: {
+            explanation: data.reply,
+            intent: data.intent,
+            tips: data.suggestions || [],
+          },
+        };
       } else {
         // Simulate network delay
         await sleep(900 + Math.random() * 600);
