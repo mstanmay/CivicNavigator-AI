@@ -7,8 +7,9 @@
   "scripts": {
     "start": "node server.js",
     "dev": "node --watch server.js",
-    "test": "mocha tests/**/*.test.js --timeout 10000",
+    "test": "nyc mocha tests/**/*.test.js --timeout 10000",
     "test:security": "mocha tests/security.test.js --timeout 5000",
+    "test:coverage": "nyc report --reporter=text-lcov > coverage.lcov",
     "security-audit": "npm audit"
   },
   "keywords": [
@@ -34,7 +35,9 @@
   "devDependencies": {
     "chai": "^6.2.2",
     "mocha": "^11.7.5",
-    "node-fetch": "^3.3.2"
+    "node-fetch": "^3.3.2",
+    "nyc": "^18.0.0",
+    "wait-on": "^9.0.5"
   },
   "engines": {
     "node": ">=18.0.0"
