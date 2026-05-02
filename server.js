@@ -33,6 +33,13 @@ const __dirname  = path.dirname(__filename);
 
 const app = express();
 
+/**
+ * Trust the first proxy (Cloud Run / load balancer).
+ * REQUIRED for express-rate-limit to work correctly behind Google Cloud Run.
+ * Without this, X-Forwarded-For header causes a ValidationError and 500 crash.
+ */
+app.set('trust proxy', 1);
+
 // ═══════════════════════════════════════════════════════════════════════════
 // SECURITY MIDDLEWARE
 // ═══════════════════════════════════════════════════════════════════════════
@@ -60,11 +67,14 @@ app.use(helmet({
   crossOriginEmbedderPolicy: false, // Required for Google Maps iframes
 }));
 
-/** CORS — whitelist-driven in production, open in development. */
+/** CORS — allow Vercel frontend + any configured origin; open in development. */
+const VERCEL_ORIGIN = 'https://civic-navigator-ai.vercel.app';
 app.use(cors({
-  origin: config.allowedOrigins.length ? config.allowedOrigins : '*',
-  methods: ['GET', 'POST'],
-  allowedHeaders: ['Content-Type'],
+  origin: config.allowedOrigins.length
+    ? [...config.allowedOrigins, VERCEL_ORIGIN]
+    : [VERCEL_ORIGIN, 'http://localhost:3000'],
+  methods: ['GET', 'POST', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
 }));
 
 /**

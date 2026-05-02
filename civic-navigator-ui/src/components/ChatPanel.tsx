@@ -118,7 +118,15 @@ export default function ChatPanel({ location, className }: ChatPanelProps) {
             language: language,
           }),
         });
+
+        if (!res.ok) {
+          const errBody = await res.json().catch(() => ({}));
+          throw new Error(errBody?.error || `Server error ${res.status}`);
+        }
+
         const data = await res.json();
+        if (!data.reply) throw new Error("Empty response from AI service.");
+
         responseData = {
           content: data.reply,
           structured: {
