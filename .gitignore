@@ -1,0 +1,31 @@
+# Dependencies
+node_modules/
+civic-navigator-ui/node_modules/
+civic-navigator-ui/.next/
+
+# Environment files (NEVER commit secrets)
+.env
+.env.local
+civic-navigator-ui/.env.local
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Build / Coverage
+coverage/
+dist/
+.nyc_output/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Docker
+*.tmp

@@ -1,0 +1,178 @@
+@import "tailwindcss";
+
+/* ── Design Tokens ─────────────────────────────────── */
+:root {
+  --bg-base: #0b0f1a;
+  --bg-surface: #111827;
+  --bg-elevated: #1a2234;
+  --bg-glass: rgba(17, 24, 39, 0.7);
+  --border-subtle: rgba(255, 255, 255, 0.07);
+  --border-mid: rgba(255, 255, 255, 0.12);
+  --primary: #4f7ef8;
+  --primary-light: #7ba3ff;
+  --primary-glow: rgba(79, 126, 248, 0.25);
+  --accent: #f5a623;
+  --accent-green: #10d06e;
+  --accent-red: #ff4757;
+  --text-primary: #f0f4ff;
+  --text-secondary: #8b99b8;
+  --text-muted: #4a5578;
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
+  --shadow-glow: 0 0 40px rgba(79, 126, 248, 0.15);
+  --transition: 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.light {
+  --bg-base: #f0f4ff;
+  --bg-surface: #ffffff;
+  --bg-elevated: #e8edf8;
+  --bg-glass: rgba(255, 255, 255, 0.75);
+  --border-subtle: rgba(0, 0, 0, 0.07);
+  --border-mid: rgba(0, 0, 0, 0.12);
+  --text-primary: #111827;
+  --text-secondary: #4a5568;
+  --text-muted: #9ca3af;
+}
+
+/* ── Tailwind v4 theme overrides ────────────────────── */
+@theme inline {
+  --color-background: var(--bg-base);
+  --color-foreground: var(--text-primary);
+  --font-sans: "Inter", "DM Sans", system-ui, sans-serif;
+}
+
+/* ── Base reset ─────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--bg-base);
+  color: var(--text-primary);
+  --font-inter: "Inter", sans-serif;
+  --font-noto: "Noto Sans", sans-serif;
+
+  font-family: var(--font-inter), var(--font-noto), system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100dvh;
+  overflow-x: hidden;
+}
+
+/* ── Scrollbar ──────────────────────────────────────── */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--bg-elevated); border-radius: 10px; }
+* { scrollbar-width: thin; scrollbar-color: var(--bg-elevated) transparent; }
+
+/* ── Glassmorphism ──────────────────────────────────── */
+.glass {
+  background: var(--bg-glass);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid var(--border-subtle);
+}
+
+.glass-strong {
+  background: rgba(17, 24, 39, 0.88);
+  backdrop-filter: blur(32px) saturate(200%);
+  -webkit-backdrop-filter: blur(32px) saturate(200%);
+  border: 1px solid var(--border-mid);
+}
+
+/* ── Custom animations ──────────────────────────────── */
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes slide-in-right {
+  from { opacity: 0; transform: translateX(20px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 20px rgba(79, 126, 248, 0.3); }
+  50%       { box-shadow: 0 0 36px rgba(79, 126, 248, 0.6); }
+}
+@keyframes typing-bounce {
+  0%, 80%, 100% { transform: translateY(0); opacity: 0.4; }
+  40%           { transform: translateY(-7px); opacity: 1; }
+}
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.3; }
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position:  200% 0; }
+}
+
+.animate-slide-up        { animation: slide-up 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
+.animate-slide-in-right  { animation: slide-in-right 0.28s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
+.animate-fade-in         { animation: fade-in 0.2s ease both; }
+.animate-pulse-glow      { animation: pulse-glow 3s ease infinite; }
+.animate-typing-1        { animation: typing-bounce 1.2s ease infinite 0ms; }
+.animate-typing-2        { animation: typing-bounce 1.2s ease infinite 180ms; }
+.animate-typing-3        { animation: typing-bounce 1.2s ease infinite 360ms; }
+.animate-blink           { animation: blink 2s ease infinite; }
+.animate-spin-slow       { animation: spin 0.9s linear infinite; }
+
+/* Shimmer skeleton */
+.shimmer {
+  background: linear-gradient(90deg, var(--bg-elevated) 25%, rgba(255,255,255,0.05) 50%, var(--bg-elevated) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+/* ── Focus ring ─────────────────────────────────────── */
+:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+:focus:not(:focus-visible) { outline: none; }
+
+/* ── Accessibility: reduced motion ──────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ── Map container ──────────────────────────────────── */
+.map-container {
+  width: 100%;
+  height: 100%;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+/* ── Gradient text ──────────────────────────────────── */
+.gradient-text {
+  background: linear-gradient(135deg, #4f7ef8, #a78bfa, #38bdf8);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── Message prose ──────────────────────────────────── */
+.message-prose strong { color: var(--primary-light); }
+.message-prose em     { color: var(--accent); }
+.message-prose code {
+  background: rgba(79, 126, 248, 0.12);
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-size: 0.85em;
+}

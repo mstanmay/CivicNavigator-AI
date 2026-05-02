@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CivicNavigator AI — Your Location-Aware Election Assistant</title>
+  <meta name="description" content="CivicNavigator AI helps you find polling places, learn about candidates, and navigate your civic duties with AI-powered guidance powered by Google Cloud." />
+  <meta name="theme-color" content="#0b0f1a" />
+  <meta name="color-scheme" content="dark" />
+  <meta name="robots" content="index, follow" />
+  <meta property="og:title" content="CivicNavigator AI" />
+  <meta property="og:description" content="Location-aware election assistant powered by Gemini AI and Google Maps." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+
+<!-- ── Skip Navigation (Accessibility) ── -->
+<a href="#chat-messages" class="skip-link" id="skip-to-content">Skip to chat</a>
+<a href="#map" class="skip-link">Skip to map</a>
+
+<!-- ═══════════════════════════════════════════════════════
+     APP SHELL
+═══════════════════════════════════════════════════════ -->
+<div id="app" role="application" aria-label="CivicNavigator AI Application">
+
+  <!-- ── Sidebar ── -->
+  <aside id="sidebar" class="sidebar" role="complementary" aria-label="CivicNavigator AI Assistant" tabindex="-1">
+
+    <!-- Header -->
+    <header class="sidebar-header">
+      <div class="brand">
+        <div class="brand-icon" aria-hidden="true">🗳️</div>
+        <div class="brand-text">
+          <h1 class="brand-name">CivicNavigator <span class="brand-ai">AI</span></h1>
+          <p class="brand-tagline">Election Assistant · Powered by Gemini</p>
+        </div>
+      </div>
+      <div class="status-pill" id="status-pill" title="System status">
+        <span class="status-dot" id="status-dot"></span>
+        <span id="status-label">Connecting…</span>
+      </div>
+    </header>
+
+    <!-- Location Bar -->
+    <div class="location-bar">
+      <div class="location-input-wrap">
+        <span class="loc-icon" aria-hidden="true">📍</span>
+        <input
+          id="location-input"
+          type="text"
+          placeholder="Enter your address to personalise…"
+          autocomplete="street-address"
+          aria-label="Your address for location-aware civic guidance"
+        />
+        <button id="detect-location-btn" class="detect-btn" title="Use my current location" aria-label="Detect my location">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/><circle cx="12" cy="12" r="8" stroke-dasharray="4 2"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <nav class="quick-actions" aria-label="Quick civic topics">
+      <button class="qa-btn" data-query="Where is my nearest polling place?" id="qa-polling">
+        <span>🏫</span> Find Polling Place
+      </button>
+      <button class="qa-btn" data-query="How do I register to vote?" id="qa-register">
+        <span>📋</span> Register to Vote
+      </button>
+      <button class="qa-btn" data-query="When is the next election and what are the key deadlines?" id="qa-dates">
+        <span>📅</span> Election Dates
+      </button>
+      <button class="qa-btn" data-query="What ID do I need to bring to vote?" id="qa-id">
+        <span>🪪</span> Voter ID Rules
+      </button>
+      <button class="qa-btn" data-query="How do I vote by mail or absentee?" id="qa-mail">
+        <span>📬</span> Vote by Mail
+      </button>
+      <button class="qa-btn" data-query="What are my voting rights if I'm turned away at the polls?" id="qa-rights">
+        <span>⚖️</span> Voter Rights
+      </button>
+    </div>
+
+    <!-- Chat Messages -->
+    <div class="chat-messages" id="chat-messages" role="log" aria-live="polite" aria-label="Conversation">
+      <!-- Welcome message injected by JS -->
+    </div>
+
+    <!-- Suggestions Row -->
+    <div class="suggestions-row" id="suggestions-row" aria-label="Suggested questions"></div>
+
+    <!-- Input Area -->
+    <form class="chat-input-form" id="chat-form" aria-label="Send a message">
+      <div class="input-wrap">
+        <textarea
+          id="chat-input"
+          placeholder="Ask anything about voting, candidates, or elections…"
+          rows="1"
+          maxlength="1000"
+          aria-label="Your civic question"
+        ></textarea>
+        <button type="submit" id="send-btn" aria-label="Send message" disabled>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        </button>
+      </div>
+      <p class="input-note">Nonpartisan · Powered by Gemini 2.0 Flash · <a href="https://vote.gov" target="_blank" rel="noopener noreferrer">vote.gov</a></p>
+      <p class="keyboard-hint" aria-label="Keyboard shortcut: press Enter to send, Shift+Enter for new line">⌨️ Enter to send · Shift+Enter for newline</p>
+    </form>
+  </aside>
+
+  <!-- ── Map Panel ── -->
+  <main id="map-panel" class="map-panel" role="main" aria-label="Interactive election map">
+
+    <!-- Map Container -->
+    <div id="map" role="img" aria-label="Google Map showing polling places and civic locations near your address"></div>
+
+    <!-- Map Overlay Controls -->
+    <div class="map-controls">
+      <button id="find-polling-map-btn" class="map-ctrl-btn primary-btn" aria-label="Find polling places near me">
+        🏫 Find Polling Places
+      </button>
+      <button id="toggle-traffic-btn" class="map-ctrl-btn" aria-label="Toggle traffic layer">
+        🚦 Traffic
+      </button>
+      <button id="reset-map-btn" class="map-ctrl-btn" aria-label="Reset map view">
+        🔄 Reset
+      </button>
+    </div>
+
+    <!-- Place Info Card -->
+    <div class="place-card" id="place-card" aria-live="polite" aria-label="Selected place info" tabindex="-1" hidden>
+      <button class="place-card-close" id="place-card-close" aria-label="Close place info">✕</button>
+      <div class="place-card-icon" id="place-card-icon">🏫</div>
+      <h2 class="place-card-name" id="place-card-name"></h2>
+      <p class="place-card-addr" id="place-card-addr"></p>
+      <div class="place-card-meta" id="place-card-meta"></div>
+      <button class="place-card-directions" id="place-card-directions">
+        🗺️ Get Directions
+      </button>
+    </div>
+
+    <!-- Map loading overlay -->
+    <div class="map-loading" id="map-loading">
+      <div class="spinner"></div>
+      <p>Loading Google Maps…</p>
+    </div>
+
+    <!-- Election Info Banner -->
+    <div class="election-banner" id="election-banner">
+      <span class="election-banner-icon">🗓️</span>
+      <span id="election-banner-text">Loading upcoming election dates…</span>
+    </div>
+  </main>
+
+</div><!-- /#app -->
+
+<!-- ── Toast Notification ── -->
+<div id="toast" class="toast" role="alert" aria-live="assertive" aria-atomic="true"></div>
+
+<!-- ── Scripts ── -->
+<script src="/app.js"></script>
+<!-- Google Maps loaded dynamically by app.js after fetching key from /api/config -->
+
+</body>
+</html>
